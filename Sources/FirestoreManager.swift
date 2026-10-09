@@ -95,7 +95,7 @@ class FirestoreManager {
                         
                         if change.type == .added || change.type == .modified {
                             if let existing = localItems.first(where: { $0.id == id }) {
-                                if existing.name != name || existing.resetTime != resetTime || existing.hexColor != hexColor || existing.orderIndex != orderIndex || existing.profileId != profile.appName {
+                                if existing.name != name || existing.resetTime != resetTime || existing.hexColor != hexColor || existing.orderIndex != orderIndex || existing.profileId != profile.appName || existing.imageData != imageData {
                                     existing.name = name
                                     existing.resetTime = resetTime
                                     existing.hexColor = hexColor
@@ -238,7 +238,7 @@ class FirestoreManager {
                         
                         if change.type == .added || change.type == .modified {
                             if let existing = localSwatches.first(where: { $0.id == id }) {
-                                if existing.name != name || existing.hexColor != hexColor || existing.profileId != profile.appName {
+                                if existing.name != name || existing.hexColor != hexColor || existing.profileId != profile.appName || existing.imageData != imageData {
                                     existing.name = name
                                     existing.hexColor = hexColor
                                     existing.profileId = profile.appName
