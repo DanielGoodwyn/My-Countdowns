@@ -238,7 +238,7 @@ class FirestoreManager {
                         
                         if change.type == .added || change.type == .modified {
                             if let existing = localSwatches.first(where: { $0.id == id }) {
-                                if existing.name != name || existing.hexColor != hexColor || existing.profileId != profile.appName || existing.imageData != imageData {
+                                if existing.name != name || existing.hexColor != hexColor || existing.profileId != profile.appName {
                                     existing.name = name
                                     existing.hexColor = hexColor
                                     existing.profileId = profile.appName
