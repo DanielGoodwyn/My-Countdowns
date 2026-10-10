@@ -399,7 +399,7 @@ struct ResetItemRow: View {
         if let d = components.day, d > 0 { parts.append("\(d)d") }
         if let h = components.hour, h > 0 { parts.append("\(h)h") }
         if let m = components.minute, m >= 0 { parts.append("\(m)m") } // show 0m if less than an hour
-        
+            
         timeRemaining = parts.joined(separator: " ") + " left"
     }
 }
