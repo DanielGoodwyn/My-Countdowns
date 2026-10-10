@@ -40,6 +40,15 @@ struct UsageResetApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+
+#if targetEnvironment(macCatalyst)
+        MenuBarExtra("My Countdowns", systemImage: "timer") {
+            ContentView()
+                .modelContainer(sharedModelContainer)
+                .frame(width: 400, height: 600)
+        }
+        .menuBarExtraStyle(.window)
+#endif
     }
     
     private func requestNotificationPermission() {
