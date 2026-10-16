@@ -71,7 +71,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             if (currentUser != null) {
-                Text("Currently logged in as:", style = MaterialTheme.typography.titleMedium, color = Color.Gray)
+                Text("Currently logged in as:", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -83,7 +83,7 @@ fun LoginScreen(
                         )
                     } else {
                         Box(
-                            modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.Blue),
+                            modifier = Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -112,12 +112,12 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 TextButton(onClick = onLogout) {
-                    Text("Log Out", color = Color.Red)
+                    Text("Log Out", color = MaterialTheme.colorScheme.error)
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))
             } else {
-                Text("Not logged in", color = Color.Gray)
+                Text("Not logged in", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
@@ -143,7 +143,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
             
             if (errorMessage.isNotEmpty()) {
-                Text(errorMessage, color = Color.Red, fontSize = 12.sp)
+                Text(errorMessage, color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
             }
             if (message.isNotEmpty()) {
                 Text(message, color = Color(0xFF4CAF50), fontSize = 12.sp)
@@ -216,14 +216,14 @@ fun LoginScreen(
                             }
                         }
                 }) {
-                    Text("Forgot my password", color = Color.Blue, fontSize = 12.sp)
+                    Text("Forgot my password", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
             }
             
             TextButton(onClick = { isLogin = !isLogin }) {
                 Text(
                     text = if (isLogin) "Don't have an account? Sign up" else "Already have an account? Sign in",
-                    color = Color.Blue,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 12.sp
                 )
             }
@@ -263,7 +263,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text("Continue with Google", color = Color.Black)
+                Text("Continue with Google", color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }

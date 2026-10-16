@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import com.danielgoodwyn.mycountdowns.ui.LoginScreen
 import com.danielgoodwyn.mycountdowns.ui.DashboardScreen
 import com.danielgoodwyn.mycountdowns.ui.CountdownsViewModel
+import com.danielgoodwyn.mycountdowns.ui.theme.MyCountdownsTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
         FirebaseAuth.getInstance().firebaseAuthSettings.setAppVerificationDisabledForTesting(true)
         
         setContent {
-            MaterialTheme {
+            MyCountdownsTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

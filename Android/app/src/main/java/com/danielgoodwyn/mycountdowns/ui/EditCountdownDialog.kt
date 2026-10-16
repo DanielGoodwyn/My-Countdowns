@@ -154,11 +154,11 @@ fun EditCountdownDialog(
                             modifier = Modifier
                                 .size(80.dp)
                                 .clip(CircleShape)
-                                .background(Color.LightGray)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable { launcher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Add Photo", fontSize = 12.sp, color = Color.DarkGray)
+                            Text("Add Photo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -186,7 +186,7 @@ fun EditCountdownDialog(
                                 .size(40.dp)
                                 .clip(CircleShape)
                                 .background(androidx.compose.ui.graphics.Brush.sweepGradient(listOf(Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta, Color.Red)))
-                                .border(2.dp, Color.LightGray, CircleShape)
+                                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
                                 .clickable { showAdvancedPicker = true }
                         )
                     }
@@ -237,11 +237,11 @@ fun EditCountdownDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(Color.LightGray)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable { swatchToEdit = ColorSwatch(name = "", hexColor = hexColor, profileId = selectedProfileId) },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Add Swatch", tint = Color.DarkGray)
+                            Icon(Icons.Default.Add, contentDescription = "Add Swatch", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

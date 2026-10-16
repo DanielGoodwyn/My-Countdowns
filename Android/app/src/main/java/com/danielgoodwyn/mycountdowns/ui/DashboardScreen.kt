@@ -207,10 +207,16 @@ fun DashboardScreen(
 
 @Composable
 fun ProfileAvatar(profile: UserProfile, onClick: () -> Unit) {
+    val defaultRingColor = MaterialTheme.colorScheme.outline
     val ringColor = try {
-        Color(android.graphics.Color.parseColor(profile.ringColor ?: "#FFFFFF"))
+        val hex = profile.ringColor
+        if (!hex.isNullOrBlank()) {
+            Color(android.graphics.Color.parseColor(if (hex.startsWith("#")) hex else "#$hex"))
+        } else {
+            defaultRingColor
+        }
     } catch (e: Exception) {
-        Color.White
+        defaultRingColor
     }
     
     Box(
@@ -333,7 +339,7 @@ fun CountdownRow(
                 val dateFormat = remember { java.text.SimpleDateFormat("MMM d, yyyy 'at' h:mm a", java.util.Locale.getDefault()) }
                 Text(
                     text = dateFormat.format(java.util.Date(item.resetTime)),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp
                 )
                 
@@ -341,7 +347,7 @@ fun CountdownRow(
                     text = "$timeLeft left",
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
-                    color = if (item.resetTime > System.currentTimeMillis()) MaterialTheme.colorScheme.onSurface else Color.Red
+                    color = if (item.resetTime > System.currentTimeMillis()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
                 )
             }
 
