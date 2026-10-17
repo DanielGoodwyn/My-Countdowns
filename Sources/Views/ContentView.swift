@@ -184,10 +184,24 @@ struct ContentView: View {
                     } else {
                         List {
                             ForEach(sortedItems) { item in
-                                ResetItemRow(item: item)
+                                ResetItemRow(item: item, onDelete: {
+                                    deleteItem(item)
+                                })
                                     .contentShape(Rectangle())
                                     .onTapGesture {
                                         itemToEdit = item
+                                    }
+                                    .contextMenu {
+                                        Button {
+                                            itemToEdit = item
+                                        } label: {
+                                            Label("Edit", systemImage: "pencil")
+                                        }
+                                        Button(role: .destructive) {
+                                            deleteItem(item)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
                                     }
                                     .swipeActions(edge: .trailing) {
                                         Button(role: .destructive) {
@@ -319,6 +333,7 @@ struct ContentView: View {
 
 struct ResetItemRow: View {
     let item: ResetItem
+    var onDelete: (() -> Void)? = nil
     @State private var timeRemaining: String = ""
     
     // A timer to update the countdown every minute
@@ -369,6 +384,20 @@ struct ResetItemRow: View {
                         .foregroundColor(item.resetTime > Date() ? .primary : .red)
                 }
                 Spacer()
+                
+                #if targetEnvironment(macCatalyst)
+                if let onDelete = onDelete {
+                    Button(action: onDelete) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 16))
+                            .padding(8)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help("Delete Countdown")
+                }
+                #endif
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 16)

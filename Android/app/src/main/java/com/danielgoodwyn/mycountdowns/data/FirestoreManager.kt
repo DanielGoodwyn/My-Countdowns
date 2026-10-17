@@ -88,6 +88,7 @@ class FirestoreManager private constructor(private val context: Context) {
                             profileId = profile.appName
                         )
                         currentItems.add(item)
+                        com.danielgoodwyn.mycountdowns.notifications.NotificationScheduler.schedule(context, item)
                     }
                     android.util.Log.d("FirestoreManager", "Total items loaded for ${profile.appName}: ${currentItems.size}")
                     _items.value = currentItems
@@ -119,9 +120,12 @@ class FirestoreManager private constructor(private val context: Context) {
         
         db.collection("users").document(profile.uid).collection("resets").document(item.id)
             .set(data, com.google.firebase.firestore.SetOptions.merge())
+            
+        com.danielgoodwyn.mycountdowns.notifications.NotificationScheduler.schedule(context, item)
     }
     
     fun deleteItem(item: ResetItem) {
+        com.danielgoodwyn.mycountdowns.notifications.NotificationScheduler.cancel(context, item.id)
         val profileId = item.profileId
         val profile = multiProfileManager.profiles.value.firstOrNull { it.appName == profileId } ?: return
         val db = multiProfileManager.getFirestore(profile.appName) ?: return

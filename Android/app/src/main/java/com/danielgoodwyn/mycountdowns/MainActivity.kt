@@ -19,13 +19,32 @@ import com.danielgoodwyn.mycountdowns.ui.DashboardScreen
 import com.danielgoodwyn.mycountdowns.ui.CountdownsViewModel
 import com.danielgoodwyn.mycountdowns.ui.theme.MyCountdownsTheme
 import com.google.firebase.auth.FirebaseAuth
+import android.os.Build
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : ComponentActivity() {
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        // Notification permission granted or denied
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         // Disable app verification for testing to avoid Recaptcha failures on emulators
         FirebaseAuth.getInstance().firebaseAuthSettings.setAppVerificationDisabledForTesting(true)
+        
+        // Request POST_NOTIFICATIONS runtime permission on Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        com.danielgoodwyn.mycountdowns.notifications.NotificationScheduler.ensureChannel(this)
         
         setContent {
             MyCountdownsTheme {

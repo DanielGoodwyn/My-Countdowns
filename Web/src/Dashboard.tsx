@@ -64,6 +64,12 @@ function SortableItem({ item, index, isFirst, isLast, sortOption, startEditing, 
       ref={setNodeRef}
       style={style}
       onClick={() => startEditing(item)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        if (window.confirm(`Delete "${item.name}" countdown?`)) {
+          deleteItem(e, item.id, item.profileId);
+        }
+      }}
       className={`relative overflow-hidden border border-zinc-200 dark:border-zinc-800 cursor-pointer group ${
         isFirst ? 'rounded-t-xl' : ''
       } ${isLast ? 'rounded-b-xl' : ''} ${
@@ -228,6 +234,45 @@ export default function Dashboard() {
 
     return () => unsubscribes.forEach(u => u());
   }, [profiles]);
+
+  // Request browser Notification permission on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    }
+  }, []);
+
+  // Schedule browser notifications for upcoming countdown resets
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const now = Date.now();
+
+    items.forEach(item => {
+      const delay = item.resetTime - now;
+      if (delay > 0 && delay < 7 * 24 * 60 * 60 * 1000) {
+        const timer = setTimeout(() => {
+          if (Notification.permission === 'granted') {
+            try {
+              new Notification('Reset Time Reached', {
+                body: `Your ${item.name} reset time has arrived!`,
+                icon: item.imageDataBase64 ? `data:image/jpeg;base64,${item.imageDataBase64}` : '/icon-192.png'
+              });
+            } catch (err) {
+              console.error('Notification error:', err);
+            }
+          }
+        }, delay);
+        timers.push(timer);
+      }
+    });
+
+    return () => {
+      timers.forEach(t => clearTimeout(t));
+    };
+  }, [items]);
 
   const handleSortChange = async (newSort: string) => {
     setSortOption(newSort);
@@ -718,9 +763,24 @@ export default function Dashboard() {
                 {editingId ? <Save size={20} /> : <Plus size={24} />}
               </button>
               {editingId && (
-                <button type="button" onClick={cancelEdit} className="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-800 dark:text-white rounded-full flex items-center justify-center transition-colors shadow-sm" title="Cancel Editing">
-                  <X size={20} />
-                </button>
+                <>
+                  <button 
+                    type="button" 
+                    onClick={async (e) => {
+                      if (editingId && window.confirm("Are you sure you want to delete this countdown?")) {
+                        await deleteItem(e, editingId, selectedProfileId);
+                        cancelEdit();
+                      }
+                    }} 
+                    className="w-10 h-10 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center transition-colors shadow-sm" 
+                    title="Delete Countdown"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                  <button type="button" onClick={cancelEdit} className="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-800 dark:text-white rounded-full flex items-center justify-center transition-colors shadow-sm" title="Cancel Editing">
+                    <X size={20} />
+                  </button>
+                </>
               )}
             </div>
           </form>

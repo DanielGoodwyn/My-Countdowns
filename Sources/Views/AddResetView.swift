@@ -138,6 +138,24 @@ struct AddResetView: View {
                         }
                     }
                 }
+                
+                if let item = itemToEdit {
+                    Section {
+                        Button(role: .destructive) {
+                            NotificationManager.shared.cancelNotification(for: item)
+                            FirestoreManager.shared.deleteItem(item)
+                            modelContext.delete(item)
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Label("Delete Countdown", systemImage: "trash")
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
             }
             .navigationTitle(itemToEdit == nil ? "New Reset" : "Edit Reset")
             .navigationBarTitleDisplayMode(.inline)
