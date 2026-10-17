@@ -41,7 +41,7 @@ struct UsageResetApp: App {
         }
         .modelContainer(sharedModelContainer)
 
-#if targetEnvironment(macCatalyst)
+#if os(macOS) && !targetEnvironment(macCatalyst)
         MenuBarExtra("My Countdowns", systemImage: "timer") {
             ContentView()
                 .modelContainer(sharedModelContainer)

@@ -184,13 +184,11 @@ struct ContentView: View {
                     } else {
                         List {
                             ForEach(sortedItems) { item in
-                                ResetItemRow(item: item, onDelete: {
+                                ResetItemRow(item: item, onEdit: {
+                                    itemToEdit = item
+                                }, onDelete: {
                                     deleteItem(item)
                                 })
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        itemToEdit = item
-                                    }
                                     .contextMenu {
                                         Button {
                                             itemToEdit = item
@@ -333,6 +331,7 @@ struct ContentView: View {
 
 struct ResetItemRow: View {
     let item: ResetItem
+    var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     @State private var timeRemaining: String = ""
     
@@ -346,58 +345,64 @@ struct ResetItemRow: View {
                 .frame(height: 4)
                 
             HStack(spacing: 16) {
-                if let data = item.imageData, let uiImage = UIImage(data: data) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .background(Color.white)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(item.color, lineWidth: 2))
-                } else {
-                    Circle()
-                        .fill(item.color)
-                        .frame(width: 50, height: 50)
-                        .background(Color.white)
-                        .clipShape(Circle())
-                        .overlay(Text(String(item.name.prefix(1))).font(.title).foregroundColor(.white))
-                        .overlay(Circle().stroke(item.color, lineWidth: 2))
-                }
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(item.name)
-                        .font(.headline)
+                // Main content: clickable to edit
+                HStack(spacing: 16) {
+                    if let data = item.imageData, let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 50, height: 50)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(item.color, lineWidth: 2))
+                    } else {
+                        Circle()
+                            .fill(item.color)
+                            .frame(width: 50, height: 50)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .overlay(Text(String(item.name.prefix(1))).font(.title).foregroundColor(.white))
+                            .overlay(Circle().stroke(item.color, lineWidth: 2))
+                    }
                     
-                    Text(item.resetTime, style: .date)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        + Text(" at ")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.name)
+                            .font(.headline)
+                        
+                        Text(item.resetTime, style: .date)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        + Text(item.resetTime, style: .time)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    
-                    Text(timeRemaining)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(item.resetTime > Date() ? .primary : .red)
+                            + Text(" at ")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            + Text(item.resetTime, style: .time)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        
+                        Text(timeRemaining)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(item.resetTime > Date() ? .primary : .red)
+                    }
+                    Spacer()
                 }
-                Spacer()
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onEdit?()
+                }
                 
-                #if targetEnvironment(macCatalyst)
+                // Trash can button on the right side of every record
                 if let onDelete = onDelete {
-                    Button(action: onDelete) {
+                    Button(role: .destructive, action: onDelete) {
                         Image(systemName: "trash")
                             .foregroundColor(.secondary)
-                            .font(.system(size: 16))
+                            .font(.system(size: 18))
                             .padding(8)
                             .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderless)
                     .help("Delete Countdown")
                 }
-                #endif
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
