@@ -44,4 +44,16 @@ class NotificationManager {
     func cancelNotification(for item: ResetItem) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [item.id.uuidString])
     }
+    
+    func clearDeliveredNotifications() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+    
+    func rescheduleAll(items: [ResetItem]) {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        for item in items {
+            scheduleNotification(for: item)
+        }
+    }
 }
+

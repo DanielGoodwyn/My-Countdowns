@@ -56,6 +56,10 @@ struct UsageResetApp: App {
             if let error = error {
                 print("Notification permission error: \(error)")
             }
+            if granted {
+                NotificationManager.shared.clearDeliveredNotifications()
+            }
         }
     }
+
 }
