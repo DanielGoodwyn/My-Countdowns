@@ -27,27 +27,19 @@ interface ColorSwatch {
 const formatHex = (hex: string) => hex.startsWith('#') ? hex : '#' + hex;
 
 const formatTimeLeft = (timestamp: number, now: number = Date.now()) => {
-  const diff = timestamp - now;
-  if (diff <= 0) return 'Countdown complete!';
+  if (now >= timestamp) return 'Countdown complete!';
 
-  const totalSecs = Math.floor(diff / 1000);
-  const s = totalSecs % 60;
-  const totalMins = Math.floor(totalSecs / 60);
-  const m = totalMins % 60;
-  const totalHours = Math.floor(totalMins / 60);
-  const h = totalHours % 24;
-  const d = Math.floor(totalHours / 24);
+  // Add 59999ms to prevent off-by-one truncations
+  const diff = timestamp - now + 59999;
+  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  if (d > 0) {
-    return `${d}d ${h}h ${m}m ${s}s left`;
-  }
-  if (h > 0) {
-    return `${h}h ${m}m ${s}s left`;
-  }
-  if (m > 0) {
-    return `${m}m ${s}s left`;
-  }
-  return `${s}s left`;
+  let str = '';
+  if (d > 0) str += `${d}d `;
+  if (h > 0) str += `${h}h `;
+  if (m >= 0) str += `${m}m `;
+  return str + 'left';
 };
 
 function SortableItem({ item, index, isFirst, isLast, sortOption, startEditing, moveItem, deleteItem, disableUp, disableDown }: any) {
