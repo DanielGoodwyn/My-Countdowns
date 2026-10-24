@@ -26,21 +26,28 @@ interface ColorSwatch {
 
 const formatHex = (hex: string) => hex.startsWith('#') ? hex : '#' + hex;
 
-  const formatTimeLeft = (timestamp: number) => {
-    const now = Date.now();
-    if (now >= timestamp) return 'Countdown complete!';
-    
-    // Add 59999ms to prevent off-by-one truncations
-    const diff = timestamp - now + 59999;
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
-  let str = '';
-  if (d > 0) str += `${d}d `;
-  if (h > 0) str += `${h}h `;
-  if (m >= 0) str += `${m}m `;
-  return str + 'left';
+const formatTimeLeft = (timestamp: number, now: number = Date.now()) => {
+  const diff = timestamp - now;
+  if (diff <= 0) return 'Countdown complete!';
+
+  const totalSecs = Math.floor(diff / 1000);
+  const s = totalSecs % 60;
+  const totalMins = Math.floor(totalSecs / 60);
+  const m = totalMins % 60;
+  const totalHours = Math.floor(totalMins / 60);
+  const h = totalHours % 24;
+  const d = Math.floor(totalHours / 24);
+
+  if (d > 0) {
+    return `${d}d ${h}h ${m}m ${s}s left`;
+  }
+  if (h > 0) {
+    return `${h}h ${m}m ${s}s left`;
+  }
+  if (m > 0) {
+    return `${m}m ${s}s left`;
+  }
+  return `${s}s left`;
 };
 
 function SortableItem({ item, index, isFirst, isLast, sortOption, startEditing, moveItem, deleteItem, disableUp, disableDown }: any) {
@@ -52,6 +59,26 @@ function SortableItem({ item, index, isFirst, isLast, sortOption, startEditing, 
     transition,
     isDragging,
   } = useSortable({ id: item.id });
+
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const update = () => setNow(Date.now());
+    const interval = setInterval(update, 1000);
+    const handleVisibility = () => {
+      if (!document.hidden) update();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', handleVisibility);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', handleVisibility);
+    };
+  }, []);
+
+  const timeLeft = formatTimeLeft(item.resetTime, now);
+  const isPast = now >= item.resetTime;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -112,8 +139,8 @@ function SortableItem({ item, index, isFirst, isLast, sortOption, startEditing, 
           <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">
             {new Date(item.resetTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
           </p>
-          <p className="font-medium mt-1 truncate" style={{ color: Date.now() > item.resetTime ? '#ef4444' : 'inherit' }}>
-            {formatTimeLeft(item.resetTime)}
+          <p className="font-medium mt-1 truncate" style={{ color: isPast ? '#ef4444' : 'inherit' }}>
+            {timeLeft}
           </p>
         </div>
 
