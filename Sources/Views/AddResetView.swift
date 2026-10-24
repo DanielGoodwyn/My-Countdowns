@@ -9,6 +9,7 @@ struct AddResetView: View {
     var itemToEdit: ResetItem?
     
     @State private var name: String
+    @State private var url: String
     @State private var selectedColor: Color
     @State private var selectedProfileId: String
     
@@ -24,6 +25,7 @@ struct AddResetView: View {
     init(itemToEdit: ResetItem? = nil) {
         self.itemToEdit = itemToEdit
         _name = State(initialValue: itemToEdit?.name ?? "")
+        _url = State(initialValue: itemToEdit?.url ?? "")
         _selectedColor = State(initialValue: itemToEdit?.color ?? .blue)
         let defaultTime = itemToEdit?.resetTime ?? Date().addingTimeInterval(86400)
         _selectedDate = State(initialValue: defaultTime)
@@ -49,6 +51,10 @@ struct AddResetView: View {
             Form {
                 Section(header: Text("Details")) {
                     TextField("Countdown Label", text: $name)
+                    TextField("Link URL (optional)", text: $url)
+                        .keyboardType(.URL)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
                     
                     if MultiProfileManager.shared.profiles.count > 1 {
                         Picker("Save to Account", selection: $selectedProfileId) {
@@ -184,6 +190,9 @@ struct AddResetView: View {
             finalDate = selectedDate
         }
         
+        let trimmedUrl = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalUrl = trimmedUrl.isEmpty ? nil : trimmedUrl
+        
         if let item = itemToEdit {
             let oldProfileId = item.profileId
             
@@ -193,6 +202,7 @@ struct AddResetView: View {
             }
             
             item.name = name
+            item.url = finalUrl
             item.hexColor = hexColor
             item.resetTime = finalDate
             item.imageData = imageData
@@ -201,7 +211,7 @@ struct AddResetView: View {
             NotificationManager.shared.scheduleNotification(for: item)
             FirestoreManager.shared.saveItem(item)
         } else {
-            let newItem = ResetItem(name: name, resetTime: finalDate, hexColor: hexColor, imageData: imageData, profileId: selectedProfileId)
+            let newItem = ResetItem(name: name, resetTime: finalDate, hexColor: hexColor, imageData: imageData, profileId: selectedProfileId, url: finalUrl)
             modelContext.insert(newItem)
             NotificationManager.shared.scheduleNotification(for: newItem)
             FirestoreManager.shared.saveItem(newItem)

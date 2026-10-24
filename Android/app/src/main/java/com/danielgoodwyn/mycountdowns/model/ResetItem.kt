@@ -9,5 +9,6 @@ data class ResetItem(
     var hexColor: String = "#0000FF",
     var imageDataBase64: String? = null,
     var orderIndex: Int = 0,
-    var profileId: String = "[DEFAULT]"
+    var profileId: String = "[DEFAULT]",
+    var url: String? = null
 )

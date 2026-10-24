@@ -13,8 +13,9 @@ final class ResetItem {
     var imageData: Data?
     var orderIndex: Int?
     var profileId: String?
+    var url: String?
     
-    init(id: UUID = UUID(), name: String, resetTime: Date, hexColor: String, imageData: Data? = nil, orderIndex: Int? = 0, profileId: String? = nil) {
+    init(id: UUID = UUID(), name: String, resetTime: Date, hexColor: String, imageData: Data? = nil, orderIndex: Int? = 0, profileId: String? = nil, url: String? = nil) {
         self.id = id
         self.name = name
         self.resetTime = resetTime
@@ -22,6 +23,7 @@ final class ResetItem {
         self.imageData = imageData
         self.orderIndex = orderIndex
         self.profileId = profileId
+        self.url = url
     }
     
     var color: Color {

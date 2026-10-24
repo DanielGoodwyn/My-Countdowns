@@ -14,6 +14,7 @@ interface ResetItem {
   imageDataBase64?: string;
   orderIndex?: number;
   profileId?: string;
+  url?: string;
 }
 
 interface ColorSwatch {
@@ -81,7 +82,18 @@ function SortableItem({ item, index, isFirst, isLast, sortOption, startEditing, 
       
       <div className="p-4 flex items-center gap-4 relative z-10">
         <div 
-          className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold border-2 overflow-hidden bg-white dark:bg-black flex-shrink-0"
+          onClick={(e) => {
+            if (item.url) {
+              e.stopPropagation();
+              let targetUrl = item.url.trim();
+              if (!/^https?:\/\//i.test(targetUrl)) {
+                targetUrl = 'https://' + targetUrl;
+              }
+              window.open(targetUrl, '_blank', 'noopener,noreferrer');
+            }
+          }}
+          className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold border-2 overflow-hidden bg-white dark:bg-black flex-shrink-0 ${item.url ? 'hover:scale-105 transition-transform cursor-pointer' : ''}`}
+          title={item.url ? `Open ${item.url}` : undefined}
           style={{ borderColor: formatHex(item.hexColor) }}
         >
           {item.imageDataBase64 ? (
@@ -176,6 +188,7 @@ export default function Dashboard() {
   }, [swatchesByProfile, profiles]);
   
   const [name, setName] = useState('');
+  const [url, setUrl] = useState('');
   const [date, setDate] = useState('');
   const [isRelativeTime, setIsRelativeTime] = useState(localStorage.getItem('preferRelativeTime') === 'true');
   const [relativeDays, setRelativeDays] = useState(1);
@@ -317,6 +330,7 @@ export default function Dashboard() {
       name,
       resetTime: finalTimestamp,
       hexColor: color.replace('#', ''),
+      url: url.trim() || null,
     };
     
     if (imageData) {
@@ -349,6 +363,7 @@ export default function Dashboard() {
     }
     
     setName('');
+    setUrl('');
     setDate('');
     setImageData(null);
   };
@@ -356,6 +371,7 @@ export default function Dashboard() {
   const cancelEdit = () => {
     setEditingId(null);
     setName('');
+    setUrl('');
     setDate('');
     setImageData(null);
     if (profiles.length > 0) {
@@ -366,6 +382,7 @@ export default function Dashboard() {
   const startEditing = (item: ResetItem) => {
     setEditingId(item.id);
     setName(item.name);
+    setUrl(item.url || '');
     
     const d = new Date(item.resetTime);
     const dateString = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
@@ -665,8 +682,16 @@ export default function Dashboard() {
               placeholder="Countdown Label"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="flex-1 min-w-[200px] bg-zinc-100 dark:bg-zinc-800 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition-colors border border-transparent dark:border-transparent"
+              className="flex-1 min-w-[180px] bg-zinc-100 dark:bg-zinc-800 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition-colors border border-transparent dark:border-transparent"
               required
+            />
+
+            <input
+              type="url"
+              placeholder="Link URL (optional)"
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              className="flex-1 min-w-[180px] bg-zinc-100 dark:bg-zinc-800 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition-colors border border-transparent dark:border-transparent text-sm"
             />
             
             <div className="flex items-center gap-2 border border-zinc-200 dark:border-zinc-700 p-1 rounded-lg">

@@ -85,7 +85,8 @@ class FirestoreManager private constructor(private val context: Context) {
                             hexColor = data["hexColor"] as? String ?: "#0000FF",
                             imageDataBase64 = data["imageDataBase64"] as? String,
                             orderIndex = (data["orderIndex"] as? Number)?.toInt() ?: 0,
-                            profileId = profile.appName
+                            profileId = profile.appName,
+                            url = data["url"] as? String
                         )
                         currentItems.add(item)
                         com.danielgoodwyn.mycountdowns.notifications.NotificationScheduler.schedule(context, item)
@@ -108,7 +109,7 @@ class FirestoreManager private constructor(private val context: Context) {
         val profile = multiProfileManager.profiles.value.firstOrNull { it.appName == profileId } ?: return
         val db = multiProfileManager.getFirestore(profile.appName) ?: return
         
-        val data = hashMapOf(
+        val data = hashMapOf<String, Any>(
             "name" to item.name,
             "hexColor" to item.hexColor,
             "resetTime" to item.resetTime,
@@ -116,6 +117,11 @@ class FirestoreManager private constructor(private val context: Context) {
         )
         item.imageDataBase64?.let {
             data["imageDataBase64"] = it
+        }
+        if (!item.url.isNullOrBlank()) {
+            data["url"] = item.url!!.trim()
+        } else {
+            data["url"] = com.google.firebase.firestore.FieldValue.delete()
         }
         
         db.collection("users").document(profile.uid).collection("resets").document(item.id)

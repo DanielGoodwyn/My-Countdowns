@@ -51,6 +51,7 @@ fun EditCountdownDialog(
 ) {
     val context = LocalContext.current
     var name by remember { mutableStateOf(item?.name ?: "") }
+    var url by remember { mutableStateOf(item?.url ?: "") }
     var hexColor by remember { mutableStateOf(item?.hexColor ?: "#2196F3") }
     var selectedProfileId by remember { mutableStateOf(item?.profileId ?: profiles.firstOrNull()?.appName ?: "") }
     var imageDataBase64 by remember { mutableStateOf(item?.imageDataBase64) }
@@ -167,6 +168,14 @@ fun EditCountdownDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = url,
+                    onValueChange = { url = it },
+                    label = { Text("Link URL (optional)") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -290,14 +299,17 @@ fun EditCountdownDialog(
         confirmButton = {
             TextButton(
                 onClick = {
+                    val trimmedUrl = url.trim()
+                    val finalUrl = if (trimmedUrl.isEmpty()) null else trimmedUrl
                     val newItem = ResetItem(
                         id = item?.id ?: UUID.randomUUID().toString(),
                         name = name,
                         hexColor = hexColor,
-                        resetTime = item?.resetTime ?: (System.currentTimeMillis() + 86400000), // Default +1 day
+                        resetTime = resetTime,
                         imageDataBase64 = imageDataBase64,
                         orderIndex = item?.orderIndex ?: 0,
-                        profileId = selectedProfileId
+                        profileId = selectedProfileId,
+                        url = finalUrl
                     )
                     onSave(newItem)
                 },

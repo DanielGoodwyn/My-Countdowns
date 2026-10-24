@@ -28,6 +28,9 @@ class FirestoreManager {
                 "resetTime": item.resetTime.timeIntervalSince1970 * 1000,
                 "orderIndex": item.orderIndex ?? 0
             ]
+            if let url = item.url, !url.isEmpty {
+                data["url"] = url
+            }
             if let imgData = item.imageData {
                 if let uiImage = UIImage(data: imgData), let compressed = uiImage.jpegData(compressionQuality: 0.5) {
                     data["imageDataBase64"] = compressed.base64EncodedString()
@@ -87,6 +90,7 @@ class FirestoreManager {
                         let resetTimeInterval = data["resetTime"] as? TimeInterval ?? Date().timeIntervalSince1970 * 1000
                         let resetTime = Date(timeIntervalSince1970: resetTimeInterval / 1000)
                         let orderIndex = data["orderIndex"] as? Int ?? 0
+                        let url = data["url"] as? String
                         
                         var imageData: Data? = nil
                         if let base64String = data["imageDataBase64"] as? String {
@@ -95,17 +99,18 @@ class FirestoreManager {
                         
                         if change.type == .added || change.type == .modified {
                             if let existing = localItems.first(where: { $0.id == id }) {
-                                if existing.name != name || existing.resetTime != resetTime || existing.hexColor != hexColor || existing.orderIndex != orderIndex || existing.profileId != profile.appName || existing.imageData != imageData {
+                                if existing.name != name || existing.resetTime != resetTime || existing.hexColor != hexColor || existing.orderIndex != orderIndex || existing.profileId != profile.appName || existing.imageData != imageData || existing.url != url {
                                     existing.name = name
                                     existing.resetTime = resetTime
                                     existing.hexColor = hexColor
                                     existing.orderIndex = orderIndex
                                     existing.imageData = imageData
                                     existing.profileId = profile.appName
+                                    existing.url = url
                                     NotificationManager.shared.scheduleNotification(for: existing)
                                 }
                             } else {
-                                let newItem = ResetItem(id: id, name: name, resetTime: resetTime, hexColor: hexColor, imageData: imageData, orderIndex: orderIndex, profileId: profile.appName)
+                                let newItem = ResetItem(id: id, name: name, resetTime: resetTime, hexColor: hexColor, imageData: imageData, orderIndex: orderIndex, profileId: profile.appName, url: url)
                                 modelContext.insert(newItem)
                                 NotificationManager.shared.scheduleNotification(for: newItem)
                             }
@@ -138,6 +143,12 @@ class FirestoreManager {
             "resetTime": item.resetTime.timeIntervalSince1970 * 1000,
             "orderIndex": item.orderIndex ?? 0
         ]
+        
+        if let url = item.url, !url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            data["url"] = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            data["url"] = FieldValue.delete()
+        }
         
         if let imgData = item.imageData {
             if let uiImage = UIImage(data: imgData), let compressed = uiImage.jpegData(compressionQuality: 0.5) {

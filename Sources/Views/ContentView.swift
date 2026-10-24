@@ -345,8 +345,8 @@ struct ResetItemRow: View {
                 .frame(height: 4)
                 
             HStack(spacing: 16) {
-                // Main content: clickable to edit
-                HStack(spacing: 16) {
+                // Circle image part: clickable to open webpage
+                Group {
                     if let data = item.imageData, let uiImage = UIImage(data: data) {
                         Image(uiImage: uiImage)
                             .resizable()
@@ -364,7 +364,24 @@ struct ResetItemRow: View {
                             .overlay(Text(String(item.name.prefix(1))).font(.title).foregroundColor(.white))
                             .overlay(Circle().stroke(item.color, lineWidth: 2))
                     }
-                    
+                }
+                .contentShape(Circle())
+                .onTapGesture {
+                    if let urlString = item.url, !urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        var target = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if !target.lowercased().hasPrefix("http://") && !target.lowercased().hasPrefix("https://") {
+                            target = "https://" + target
+                        }
+                        if let url = URL(string: target) {
+                            UIApplication.shared.open(url)
+                            return
+                        }
+                    }
+                    onEdit?()
+                }
+                
+                // Main content: clickable to edit
+                HStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.name)
                             .font(.headline)

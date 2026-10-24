@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -196,6 +197,7 @@ fun DashboardScreen(
                             isCustomOrder = isCustomOrder,
                             onMoveUp = if (isCustomOrder && index > 0) { { viewModel.moveItem(index, index - 1, sortedItems) } } else null,
                             onMoveDown = if (isCustomOrder && index < sortedItems.size - 1) { { viewModel.moveItem(index, index + 1, sortedItems) } } else null,
+                            onDelete = { viewModel.deleteItem(sortedItems[index]) },
                             onClick = { editingItem = sortedItems[index] }
                         )
                     }
@@ -262,8 +264,10 @@ fun CountdownRow(
     isCustomOrder: Boolean = false,
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     var timeLeft by remember { mutableStateOf(calculateTimeLeft(item.resetTime)) }
     
     LaunchedEffect(item.resetTime) {
@@ -278,6 +282,24 @@ fun CountdownRow(
         Color(android.graphics.Color.parseColor(hexString))
     } catch (e: Exception) {
         Color.DarkGray
+    }
+
+    val handleCircleClick = {
+        if (!item.url.isNullOrBlank()) {
+            var target = item.url!!.trim()
+            if (!target.startsWith("http://", ignoreCase = true) && !target.startsWith("https://", ignoreCase = true)) {
+                target = "https://$target"
+            }
+            try {
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(target))
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onClick()
+            }
+        } else {
+            onClick()
+        }
     }
 
     Column(
@@ -306,7 +328,8 @@ fun CountdownRow(
                         .size(50.dp)
                         .clip(CircleShape)
                         .background(Color.White)
-                        .border(2.dp, bgColor, CircleShape),
+                        .border(2.dp, bgColor, CircleShape)
+                        .clickable { handleCircleClick() },
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
             } else {
@@ -315,7 +338,8 @@ fun CountdownRow(
                         .size(50.dp)
                         .clip(CircleShape)
                         .background(bgColor)
-                        .border(2.dp, bgColor, CircleShape),
+                        .border(2.dp, bgColor, CircleShape)
+                        .clickable { handleCircleClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -359,6 +383,16 @@ fun CountdownRow(
                     IconButton(onClick = { onMoveDown?.invoke() }, enabled = onMoveDown != null, modifier = Modifier.size(32.dp)) {
                         Icon(androidx.compose.material.icons.Icons.Default.KeyboardArrowDown, contentDescription = "Move Down")
                     }
+                }
+            }
+
+            if (onDelete != null) {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete Countdown",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
