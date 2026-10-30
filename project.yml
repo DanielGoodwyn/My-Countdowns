@@ -29,4 +29,4 @@ targets:
         UILaunchScreen: {}
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
-        NSPhotoLibraryUsageDescription: "Needed to pick logos for your resets."
+        NSPhotoLibraryUsageDescription: "Needed to pick logos for your countdowns."

@@ -78,7 +78,7 @@ struct AddResetView: View {
                     }
                 }
                 
-                Section(header: Text("Reset Time")) {
+                Section(header: Text("Target Time")) {
                     Picker("Time Mode", selection: $isRelativeTime) {
                         Text("Exact Date/Time").tag(false)
                         Text("Duration Left").tag(true)
@@ -163,7 +163,7 @@ struct AddResetView: View {
                     }
                 }
             }
-            .navigationTitle(itemToEdit == nil ? "New Reset" : "Edit Reset")
+            .navigationTitle(itemToEdit == nil ? "New Countdown" : "Edit Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

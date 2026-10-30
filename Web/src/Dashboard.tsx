@@ -288,8 +288,8 @@ export default function Dashboard() {
         const timer = setTimeout(() => {
           if (Notification.permission === 'granted') {
             try {
-              new Notification('Reset Time Reached', {
-                body: `Your ${item.name} reset time has arrived!`,
+              new Notification('Countdown Complete', {
+                body: `Your ${item.name} countdown is complete!`,
                 icon: item.imageDataBase64 ? `data:image/jpeg;base64,${item.imageDataBase64}` : '/icon-192.png'
               });
             } catch (err) {
@@ -900,7 +900,7 @@ export default function Dashboard() {
             </SortableContext>
           </DndContext>
           {items.length === 0 && (
-            <p className="text-center text-zinc-500 mt-12">No resets saved yet. Add one above!</p>
+            <p className="text-center text-zinc-500 mt-12">No countdowns saved yet. Add one above!</p>
           )}
         </div>
       </div>

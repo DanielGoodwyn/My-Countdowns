@@ -1,7 +1,7 @@
 {
   "name": "My Countdowns",
   "short_name": "Countdowns",
-  "description": "Track your important dates, countdowns, and reset cycles in one place.",
+  "description": "Track your important dates, events, and countdowns in one place.",
   "start_url": "/my-countdowns/",
   "scope": "/my-countdowns/",
   "display": "standalone",

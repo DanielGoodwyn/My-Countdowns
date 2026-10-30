@@ -8,8 +8,8 @@ class NotificationManager {
     
     func scheduleNotification(for item: ResetItem) {
         let content = UNMutableNotificationContent()
-        content.title = "Reset Time Reached"
-        content.body = "Your \(item.name) reset time has arrived!"
+        content.title = "Countdown Complete"
+        content.body = "Your \(item.name) countdown is complete!"
         content.sound = .default
         
         if let data = item.imageData {

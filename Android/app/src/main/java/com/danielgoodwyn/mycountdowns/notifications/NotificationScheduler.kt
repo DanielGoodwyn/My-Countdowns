@@ -24,7 +24,7 @@ object NotificationScheduler {
     fun ensureChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Countdown Notifications"
-            val descriptionText = "Notifications when countdown reset times arrive"
+            val descriptionText = "Notifications when countdown times arrive"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
@@ -106,8 +106,8 @@ object NotificationScheduler {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Reset Time Reached")
-            .setContentText("Your $name reset time has arrived!")
+            .setContentTitle("Countdown Complete")
+            .setContentText("Your $name countdown is complete!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
