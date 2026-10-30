@@ -368,7 +368,7 @@ fun CountdownRow(
                 )
                 
                 Text(
-                    text = "$timeLeft left",
+                    text = timeLeft,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
                     color = if (item.resetTime > System.currentTimeMillis()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
@@ -412,15 +412,18 @@ fun decodeBase64ToImageBitmap(base64Str: String): androidx.compose.ui.graphics.I
 }
 
 fun calculateTimeLeft(resetTimeMs: Long): String {
-    val diff = resetTimeMs - System.currentTimeMillis()
-    if (diff <= 0) return "Ready!"
+    val now = System.currentTimeMillis()
+    if (now >= resetTimeMs) return "Countdown complete!"
     
+    val diff = resetTimeMs - now + 59999
     val days = diff / (1000 * 60 * 60 * 24)
     val hours = (diff / (1000 * 60 * 60)) % 24
     val mins = (diff / (1000 * 60)) % 60
-    val secs = (diff / 1000) % 60
     
-    if (days > 0) return "${days}d ${hours}h"
-    if (hours > 0) return "${hours}h ${mins}m"
-    return "${mins}m ${secs}s"
+    val parts = mutableListOf<String>()
+    if (days > 0) parts.add("${days}d")
+    if (hours > 0) parts.add("${hours}h")
+    if (mins >= 0) parts.add("${mins}m")
+    
+    return parts.joinToString(" ") + " left"
 }
